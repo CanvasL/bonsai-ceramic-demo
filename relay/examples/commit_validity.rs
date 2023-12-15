@@ -14,7 +14,10 @@
 
 use anyhow::Context;
 use bonsai_ethereum_relay::sdk::client::{CallbackRequest, Client};
+use ceramic_core::StreamId;
 use clap::Parser;
+use dataverse_ceramic::network::Network;
+use dataverse_ceramic::{StreamState, EventsLoader, Ceramic};
 use ethabi::{ParamType, Token};
 use ethers::prelude::*;
 use ethers::{providers::Provider, types::Address};
@@ -63,7 +66,7 @@ async fn main() -> anyhow::Result<()> {
     abigen!(
         Consumer,
         r#"[
-            event QuerySent(bytes32 imageId, bytes requestData, address callbackAddr, bytes4 callbackFunc, uint64 gasLimit)
+            event QuerySent(bytes32 queryId, bytes32 imageId, bytes queryData, address callbackAddr, bytes4 callbackFunc, uint64 gasLimit)
         ]"#
     );
 
@@ -80,23 +83,26 @@ async fn main() -> anyhow::Result<()> {
 
     while let Some(Ok(evt)) = stream.next().await {
         println!("QuerySent event: {evt:?}");
+        let query_id: [u8; 32] = evt.query_id;
         let image_id: [u8; 32] = evt.image_id;
-        let request_data: Bytes = evt.request_data;
+        let query_data: Bytes = evt.query_data;
         let callback_addr: Address = evt.callback_addr;
         let callback_func: [u8; 4] = evt.callback_func;
         let gas_limit: u64 = evt.gas_limit;
 
         let decoded_data: Vec<Token> = ethabi::decode(
-            &[ParamType::FixedBytes(16), ParamType::String],
-            &request_data,
+            &[ParamType::Address, ParamType::String, ParamType::String],
+            &query_data,
         )
         .unwrap();
-        let dapp_id = decoded_data[0].clone().into_fixed_bytes().unwrap();
+        let owner = decoded_data[0].clone().into_string().unwrap();
         let file_id = decoded_data[1].clone().into_string().unwrap();
+        let commit_id = decoded_data[2].clone().into_string().unwrap();
 
-        let validation_data  = fetch_ceramic_validation_data(dapp_id, file_id).await.unwrap();
+        let payload  = get_payload(file_id, commit_id).await.unwrap();
+        let payload_data = serde_json::to_string(&payload);
 
-        let input_params = vec![Token::Bytes(request_data.to_vec()), Token::String(validation_data)];
+        let input_params = vec![Token::FixedBytes(query_id), Token::Bytes(query_data.to_vec()), Token::String(payload_data)];
         let input = ethabi::encode(&input_params);
 
         let request = CallbackRequest {
@@ -116,13 +122,13 @@ async fn main() -> anyhow::Result<()> {
     Ok(())
 }
 
-async fn fetch_ceramic_validation_data(
-    dapp_id: Vec<u8>,
-    file_id: String,
-) -> Result<String, Box<dyn std::error::Error + 'static>> {
-    // TODO: network-crates is unavailable now
-    println!("dapp_id:{:?}\nfile_id:{}", dapp_id, file_id);
-    let raw_content = fs::read("relay/examples/validation.json").await?;
-    let content = String::from_utf8(raw_content)?;
-    Ok(content)
+pub async fn get_payload(
+    file_id: StreamId,
+    commit_id: String,
+) -> anyhow::Result<Vec<dataverse_ceramic::event::Event>> {
+    let client = dataverse_ceramic::http::Client::new();
+    let ceramic = Ceramic{ endpoint: "https://dataverseceramicdaemon.com".into(), network: Network::Mainnet };
+    let events =client.load_events(&ceramic, &file_id, None).await?;
+
+    return Ok(events);
 }

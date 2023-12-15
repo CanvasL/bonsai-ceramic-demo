@@ -22,3 +22,14 @@ lto = true
 
 [profile.release.build-override]
 opt-level = 3
+
+[patch.'https://github.com/ceramicnetwork/rust-ceramic']
+ceramic-core = { git = "https://github.com/dataverse-os/rust-ceramic", branch = "patch-kubo-block-put" }
+ceramic-event = { git = "https://github.com/dataverse-os/rust-ceramic", branch = "patch-kubo-block-put" }
+ceramic-kubo-rpc-server = { git = "https://github.com/dataverse-os/rust-ceramic", branch = "patch-kubo-block-put" }
+
+[patch.'https://github.com/3box/rust-ceramic']
+ceramic-event = { git = "https://github.com/dataverse-os/rust-ceramic", branch = "patch-kubo-block-put" }
+
+[patch.'https://github.com/3box/ceramic-http-client-rs']
+ceramic-http-client = { git = "https://github.com/dataverse-os/ceramic-http-client-rs", branch = "patch-methods" }
