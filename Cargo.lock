@@ -1010,8 +1010,8 @@ dependencies = [
  "bincode",
  "bonsai-ethereum-relay",
  "bonsai-sdk",
- "bonsai-starter-methods",
  "bytemuck",
+ "ceramic-check-methods",
  "ceramic-core",
  "clap",
  "dataverse-ceramic",
@@ -1055,14 +1055,6 @@ dependencies = [
  "serde",
  "thiserror",
  "tokio",
-]
-
-[[package]]
-name = "bonsai-starter-methods"
-version = "0.1.0"
-dependencies = [
- "risc0-build",
- "risc0-zkvm",
 ]
 
 [[package]]
@@ -1270,6 +1262,14 @@ checksum = "f1174fb0b6ec23863f8b971027804a42614e347eafb0a95bf0b12cdae21fc4d0"
 dependencies = [
  "jobserver",
  "libc",
+]
+
+[[package]]
+name = "ceramic-check-methods"
+version = "0.1.0"
+dependencies = [
+ "risc0-build",
+ "risc0-zkvm",
 ]
 
 [[package]]
