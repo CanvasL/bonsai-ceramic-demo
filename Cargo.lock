@@ -1824,6 +1824,7 @@ dependencies = [
 [[package]]
 name = "dapp-table-client"
 version = "0.1.0"
+source = "git+https://github.com/dataverse-os/network-crates?branch=main#26c211bc3c5f630129167aafb1b09fabd56cb69c"
 dependencies = [
  "anyhow",
  "graphql_client",
@@ -1967,6 +1968,7 @@ dependencies = [
 [[package]]
 name = "dataverse-ceramic"
 version = "0.1.0"
+source = "git+https://github.com/dataverse-os/network-crates?branch=main#26c211bc3c5f630129167aafb1b09fabd56cb69c"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1993,6 +1995,7 @@ dependencies = [
  "multibase 0.9.1",
  "once_cell",
  "primitive-types 0.12.2",
+ "reqwest",
  "serde",
  "serde_json",
  "serde_repr",
@@ -2009,33 +2012,46 @@ dependencies = [
 [[package]]
 name = "dataverse-core"
 version = "0.1.0"
+source = "git+https://github.com/dataverse-os/network-crates?branch=main#26c211bc3c5f630129167aafb1b09fabd56cb69c"
 dependencies = [
  "anyhow",
  "async-trait",
  "ceramic-core",
+ "ceramic-http-client",
+ "chrono",
  "dapp-table-client",
  "dataverse-ceramic",
  "fang",
+ "hex",
  "int-enum",
  "log 0.4.20",
+ "multibase 0.9.1",
  "once_cell",
  "serde",
  "serde_json",
+ "ssi",
  "tokio",
+ "unsigned-varint",
+ "url",
  "uuid 1.6.1",
 ]
 
 [[package]]
 name = "dataverse-file-system"
 version = "0.1.0"
+source = "git+https://github.com/dataverse-os/network-crates?branch=main#26c211bc3c5f630129167aafb1b09fabd56cb69c"
 dependencies = [
  "anyhow",
+ "async-channel 2.1.1",
  "async-std",
  "async-trait",
  "base64 0.21.5",
  "ceramic-core",
+ "ceramic-event",
  "ceramic-http-client",
  "chrono",
+ "dag-jose",
+ "dapp-table-client",
  "dataverse-ceramic",
  "dataverse-core",
  "diesel",
@@ -2043,9 +2059,13 @@ dependencies = [
  "int-enum",
  "json-patch",
  "log 0.4.20",
+ "multibase 0.9.1",
+ "reqwest",
  "serde",
  "serde_json",
+ "tokio",
  "tracing",
+ "url",
  "uuid 1.6.1",
 ]
 
@@ -9311,11 +9331,3 @@ dependencies = [
  "cc",
  "pkg-config",
 ]
-
-[[patch.unused]]
-name = "dataverse-iroh-store"
-version = "0.1.0"
-
-[[patch.unused]]
-name = "dataverse-pgsql-store"
-version = "0.1.0"
