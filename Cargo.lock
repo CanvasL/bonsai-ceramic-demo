@@ -1265,6 +1265,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "ceramic-check-guest"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "dataverse-ceramic",
+ "dataverse-file-system",
+ "ethabi",
+ "futures",
+ "futures-util",
+ "radium 1.1.0",
+ "risc0-zkvm",
+ "serde_json",
+ "tokio",
+]
+
+[[package]]
 name = "ceramic-check-methods"
 version = "0.1.0"
 dependencies = [
@@ -1808,7 +1824,6 @@ dependencies = [
 [[package]]
 name = "dapp-table-client"
 version = "0.1.0"
-source = "git+https://github.com/dataverse-os/network-crates?branch=main#57e6695a7d2bcdcd03dc84f8e68ac0e111a02ab3"
 dependencies = [
  "anyhow",
  "graphql_client",
@@ -1952,7 +1967,6 @@ dependencies = [
 [[package]]
 name = "dataverse-ceramic"
 version = "0.1.0"
-source = "git+https://github.com/dataverse-os/network-crates?branch=main#57e6695a7d2bcdcd03dc84f8e68ac0e111a02ab3"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -1979,7 +1993,6 @@ dependencies = [
  "multibase 0.9.1",
  "once_cell",
  "primitive-types 0.12.2",
- "reqwest",
  "serde",
  "serde_json",
  "serde_repr",
@@ -1996,46 +2009,33 @@ dependencies = [
 [[package]]
 name = "dataverse-core"
 version = "0.1.0"
-source = "git+https://github.com/dataverse-os/network-crates?branch=main#57e6695a7d2bcdcd03dc84f8e68ac0e111a02ab3"
 dependencies = [
  "anyhow",
  "async-trait",
  "ceramic-core",
- "ceramic-http-client",
- "chrono",
  "dapp-table-client",
  "dataverse-ceramic",
  "fang",
- "hex",
  "int-enum",
  "log 0.4.20",
- "multibase 0.9.1",
  "once_cell",
  "serde",
  "serde_json",
- "ssi",
  "tokio",
- "unsigned-varint",
- "url",
  "uuid 1.6.1",
 ]
 
 [[package]]
 name = "dataverse-file-system"
 version = "0.1.0"
-source = "git+https://github.com/dataverse-os/network-crates?branch=main#57e6695a7d2bcdcd03dc84f8e68ac0e111a02ab3"
 dependencies = [
  "anyhow",
- "async-channel 2.1.1",
  "async-std",
  "async-trait",
  "base64 0.21.5",
  "ceramic-core",
- "ceramic-event",
  "ceramic-http-client",
  "chrono",
- "dag-jose",
- "dapp-table-client",
  "dataverse-ceramic",
  "dataverse-core",
  "diesel",
@@ -2043,13 +2043,9 @@ dependencies = [
  "int-enum",
  "json-patch",
  "log 0.4.20",
- "multibase 0.9.1",
- "reqwest",
  "serde",
  "serde_json",
- "tokio",
  "tracing",
- "url",
  "uuid 1.6.1",
 ]
 
@@ -5891,6 +5887,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dc33ff2d4973d518d823d61aa239014831e521c75da58e3df4840d3f47749d09"
 
 [[package]]
+name = "radium"
+version = "1.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "db0b76288902db304c864a12046b73d2d895cc34a4bb8137baaeebe9978a072c"
+dependencies = [
+ "cfg-if",
+]
+
+[[package]]
 name = "rand"
 version = "0.6.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -8131,9 +8136,9 @@ checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
 
 [[package]]
 name = "tokio"
-version = "1.35.0"
+version = "1.35.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "841d45b238a16291a4e1584e61820b8ae57d696cc5015c459c229ccc6990cc1c"
+checksum = "c89b4efa943be685f629b149f53829423f8f5531ea21249408e8e2f8671ec104"
 dependencies = [
  "backtrace",
  "bytes 1.5.0",
@@ -9306,3 +9311,11 @@ dependencies = [
  "cc",
  "pkg-config",
 ]
+
+[[patch.unused]]
+name = "dataverse-iroh-store"
+version = "0.1.0"
+
+[[patch.unused]]
+name = "dataverse-pgsql-store"
+version = "0.1.0"

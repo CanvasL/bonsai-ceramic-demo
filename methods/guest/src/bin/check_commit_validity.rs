@@ -16,36 +16,56 @@
 
 use std::io::Read;
 
-use ethabi::{ethereum_types::U256, ParamType, Token};
+use ethabi::{
+    ethereum_types::{H160, U256},
+    ParamType, Token,
+};
+use futures_util::FutureExt;
 use risc0_zkvm::guest::env;
+use tokio::sync::futures;
 
 risc0_zkvm::guest::entry!(main);
-
 fn main() {
     let mut input_bytes = Vec::<u8>::new();
     env::stdin().read_to_end(&mut input_bytes).unwrap();
 
-    let decoded_input =
-        ethabi::decode_whole(&[ParamType::FixedBytes, ParamType::Bytes, ParamType::String], &input_bytes).unwrap();
+    let decoded_input = ethabi::decode(
+        &[
+            ParamType::FixedBytes(32),
+            ParamType::Bytes,
+            ParamType::String,
+        ],
+        &input_bytes,
+    )
+    .unwrap();
     let query_id = decoded_input[0].clone().into_fixed_bytes();
-    let query_data = decoded_input[1].clone().into_bytes();
-    let validation_data = decoded_input[2].clone().into_string();
+    let query_data = decoded_input[1].clone().into_bytes().unwrap();
+    let validation_data = decoded_input[2].clone().into_string().unwrap();
 
-    let decoded_query_data: Vec<Token> =
-        ethabi::decode(&[ParamType::FixedBytes, ParamType::String, ParamType::String], &query_data).unwrap();
+    let decoded_query_data: Vec<Token> = ethabi::decode(
+        &[
+            ParamType::FixedBytes(32),
+            ParamType::String,
+            ParamType::String,
+        ],
+        &query_data,
+    )
+    .unwrap();
     let owner = decoded_query_data[0].clone().into_fixed_bytes().unwrap();
     let file_id = decoded_query_data[1].clone().into_string().unwrap();
     let commit_id = decoded_query_data[2].clone().into_string().unwrap();
 
-    let events: Vec<dataverse_ceramic::Event> = serde_json.from_str(validation_data)?;
-    let state = dataverse_ceramic::StreamState::make(3, events).await;
+    let events: Vec<dataverse_ceramic::Event> = serde_json::from_str(&validation_data).unwrap();
+    let state_future = dataverse_ceramic::StreamState::make(3, events);
+    let state = futures::executor::block_on(state_future);
     let result = match state {
         Ok(_) => true,
-        Err(_) => false
+        Err(_) => false,
     };
 
     // // Commit the journal that will be received by the application contract.
     // // Encoded types should match the args expected by the application callback.
+    let owner = H160::from_slice(&owner);
     env::commit_slice(&ethabi::encode(&[
         Token::Address(owner),
         Token::String(file_id),
