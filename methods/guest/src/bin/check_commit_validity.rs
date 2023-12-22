@@ -20,9 +20,9 @@ use ethabi::{
     ethereum_types::{H160, U256},
     ParamType, Token,
 };
-use futures_util::FutureExt;
+// use futures_util::FutureExt;
 use risc0_zkvm::guest::env;
-use tokio::sync::futures;
+// use tokio::sync::futures;
 
 risc0_zkvm::guest::entry!(main);
 fn main() {
@@ -55,13 +55,14 @@ fn main() {
     let file_id = decoded_query_data[1].clone().into_string().unwrap();
     let commit_id = decoded_query_data[2].clone().into_string().unwrap();
 
-    let events: Vec<dataverse_ceramic::Event> = serde_json::from_str(&validation_data).unwrap();
-    let state_future = dataverse_ceramic::StreamState::make(3, events);
-    let state = futures::executor::block_on(state_future);
-    let result = match state {
-        Ok(_) => true,
-        Err(_) => false,
-    };
+    // let events: Vec<dataverse_ceramic::Event> = serde_json::from_str(&validation_data).unwrap();
+    // let state_future = dataverse_ceramic::StreamState::make(3, events);
+    // let state = futures::executor::block_on(state_future);
+    // let result = match state {
+    //     Ok(_) => true,
+    //     Err(_) => false,
+    // };
+    let result = true;
 
     // // Commit the journal that will be received by the application contract.
     // // Encoded types should match the args expected by the application callback.

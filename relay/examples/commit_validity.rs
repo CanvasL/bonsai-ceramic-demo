@@ -17,12 +17,12 @@ use bonsai_ethereum_relay::sdk::client::{CallbackRequest, Client};
 use ceramic_core::StreamId;
 use clap::Parser;
 use dataverse_ceramic::network::Network;
-use dataverse_ceramic::{StreamState, EventsLoader, Ceramic};
+use dataverse_ceramic::{EventsLoader, Ceramic};
 use ethabi::{ParamType, Token};
 use ethers::prelude::*;
 use ethers::{providers::Provider, types::Address};
+use std::str::FromStr;
 use std::sync::Arc;
-use tokio::fs;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about)]
@@ -30,7 +30,7 @@ struct Args {
     #[arg(
         long,
         env,
-        default_value = "0x9a9964D9E39D8891a95490C1e1159C4D6eC77980"
+        default_value = "0xc2349777EcAa5ecC181998453aa9D4B97705C0A5"
     )]
     address: Address,
 
@@ -42,7 +42,7 @@ struct Args {
     rpc_url: String,
 
     /// Bonsai Relay API URL.
-    #[arg(long, env, default_value = "https://api.bonsai.xyz/")]
+    #[arg(long, env, default_value = "http://localhost:8080")]
     bonsai_relay_api_url: String,
 
     #[arg(long, env, default_value = "6Y7lEBg5sI7NF1ih0CtpY6zpOzn5TsB09ToWpr4t")]
@@ -95,14 +95,14 @@ async fn main() -> anyhow::Result<()> {
             &query_data,
         )
         .unwrap();
-        let owner = decoded_data[0].clone().into_string().unwrap();
+        // let owner = decoded_data[0].clone().into_string().unwrap();
         let file_id = decoded_data[1].clone().into_string().unwrap();
         let commit_id = decoded_data[2].clone().into_string().unwrap();
 
-        let payload  = get_payload(file_id, commit_id).await.unwrap();
-        let payload_data = serde_json::to_string(&payload);
+        let payload  = get_payload(StreamId::from_str(file_id.as_str())?, commit_id).await.unwrap();
+        let payload_data = serde_json::to_string(&payload)?;
 
-        let input_params = vec![Token::FixedBytes(query_id), Token::Bytes(query_data.to_vec()), Token::String(payload_data)];
+        let input_params = vec![Token::FixedBytes(query_id.to_vec()), Token::Bytes(query_data.to_vec()), Token::String(payload_data)];
         let input = ethabi::encode(&input_params);
 
         let request = CallbackRequest {
@@ -124,7 +124,7 @@ async fn main() -> anyhow::Result<()> {
 
 pub async fn get_payload(
     file_id: StreamId,
-    commit_id: String,
+    _commit_id: String,
 ) -> anyhow::Result<Vec<dataverse_ceramic::event::Event>> {
     let client = dataverse_ceramic::http::Client::new();
     let ceramic = Ceramic{ endpoint: "https://dataverseceramicdaemon.com".into(), network: Network::Mainnet };
