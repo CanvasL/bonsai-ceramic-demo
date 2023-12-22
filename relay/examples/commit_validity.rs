@@ -30,14 +30,14 @@ struct Args {
     #[arg(
         long,
         env,
-        default_value = "0xc2349777EcAa5ecC181998453aa9D4B97705C0A5"
+        // default_value = "wss://polygon-mumbai.g.alchemy.com/v2/xVWk2q1-WpFBPKJuvCAO1sXLlfCKqfaI"
     )]
     address: Address,
 
     #[arg(
         long,
         env,
-        default_value = "wss://polygon-mumbai.g.alchemy.com/v2/xVWk2q1-WpFBPKJuvCAO1sXLlfCKqfaI"
+        // default_value = "wss://polygon-mumbai.g.alchemy.com/v2/xVWk2q1-WpFBPKJuvCAO1sXLlfCKqfaI"
     )]
     rpc_url: String,
 
@@ -45,7 +45,7 @@ struct Args {
     #[arg(long, env, default_value = "http://localhost:8080")]
     bonsai_relay_api_url: String,
 
-    #[arg(long, env, default_value = "6Y7lEBg5sI7NF1ih0CtpY6zpOzn5TsB09ToWpr4t")]
+    #[arg(long, env)]
     bonsai_api_key: String,
 }
 
@@ -101,6 +101,7 @@ async fn main() -> anyhow::Result<()> {
 
         let payload  = get_payload(StreamId::from_str(file_id.as_str())?, commit_id).await.unwrap();
         let payload_data = serde_json::to_string(&payload)?;
+        println!("payload: {}", payload_data);
 
         let input_params = vec![Token::FixedBytes(query_id.to_vec()), Token::Bytes(query_data.to_vec()), Token::String(payload_data)];
         let input = ethabi::encode(&input_params);

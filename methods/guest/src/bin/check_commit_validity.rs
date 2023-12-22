@@ -38,20 +38,20 @@ fn main() {
         &input_bytes,
     )
     .unwrap();
-    let query_id = decoded_input[0].clone().into_fixed_bytes();
+    let query_id = decoded_input[0].clone().into_fixed_bytes().unwrap();
     let query_data = decoded_input[1].clone().into_bytes().unwrap();
     let validation_data = decoded_input[2].clone().into_string().unwrap();
 
     let decoded_query_data: Vec<Token> = ethabi::decode(
         &[
-            ParamType::FixedBytes(32),
+            ParamType::Address,
             ParamType::String,
             ParamType::String,
         ],
         &query_data,
     )
     .unwrap();
-    let owner = decoded_query_data[0].clone().into_fixed_bytes().unwrap();
+    let owner = decoded_query_data[0].clone().into_address().unwrap();
     let file_id = decoded_query_data[1].clone().into_string().unwrap();
     let commit_id = decoded_query_data[2].clone().into_string().unwrap();
 
@@ -66,8 +66,8 @@ fn main() {
 
     // // Commit the journal that will be received by the application contract.
     // // Encoded types should match the args expected by the application callback.
-    let owner = H160::from_slice(&owner);
     env::commit_slice(&ethabi::encode(&[
+        Token::FixedBytes(query_id),
         Token::Address(owner),
         Token::String(file_id),
         Token::String(commit_id),
