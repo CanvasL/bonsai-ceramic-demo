@@ -26,11 +26,11 @@ contract Consumer is BonsaiCallbackReceiver {
 
     function queryStreamFileValidity(address owner, string calldata fileId, string calldata commitId) external {
         bytes memory queryData = abi.encode(owner, fileId, commitId);
-        bytes32 queryId = keccak256(abi.encodePacked(queryData, address(this), this.fulfillLatestFileContent.selector, BONSAI_CALLBACK_GAS_LIMIT));
-        emit QuerySent(queryId, IMAGE_ID, queryData, address(this), this.fulfillLatestFileContent.selector, BONSAI_CALLBACK_GAS_LIMIT);
+        bytes32 queryId = keccak256(abi.encodePacked(queryData, address(this), this.fulfillQueryStreamFileValidity.selector, BONSAI_CALLBACK_GAS_LIMIT));
+        emit QuerySent(queryId, IMAGE_ID, queryData, address(this), this.fulfillQueryStreamFileValidity.selector, BONSAI_CALLBACK_GAS_LIMIT);
     }
 
-    function fulfillLatestFileContent(bytes32 queryId, address owner, string memory fileId, string memory commitId, bool result) external onlyBonsaiCallback(IMAGE_ID) {
+    function fulfillQueryStreamFileValidity(bytes32 queryId, address owner, string memory fileId, string memory commitId, bool result) external onlyBonsaiCallback(IMAGE_ID) {
         commitValidity[owner][fileId][commitId] = result;
         _queryFulfilled[queryId];
 
